@@ -4,7 +4,9 @@ const cookieSession = require('cookie-session');
 const passport = require('passport');
 require('./passport');
 const isLoggedIn = require('./Middleware/auth');
+const connectDB = require('./config/db');
 
+connectDB();
 app.use(
   cookieSession({
     name: 'spotify-auth-session',
@@ -14,7 +16,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', isLoggedIn, (req, res) => {
+app.get('/', isLoggedIn, async (req, res) => {
   res.send(`Hello world ${req.user.displayName}`);
 });
 app.get('/auth/error', (req, res) => res.send('Unknown Error'));
@@ -34,5 +36,5 @@ app.get('/logout', (req, res) => {
 });
 
 app.listen(8000, () => {
-  console.log('Serve is up and running at the port 8000');
+  console.log('Server is up and running at the port 8000');
 });
