@@ -5,6 +5,13 @@ const passport = require('passport');
 require('./passport');
 const isLoggedIn = require('./Middleware/auth');
 const connectDB = require('./config/db');
+const config = require('config');
+const clientId = config.get('spotifyClientId');
+const clientSecret = config.get('spotifyClientSecret');
+const _testSpotifyAccessToken = config.get('testSpotifyAccessToken');
+const _testSpotifyRefreshToken = config.get('testSpotifyAccessToken');
+const _testSpotifyPlaylistId = config.get('testSpotifyAccessToken');
+const _testSpotifyUsername = config.get('testSpotifyAccessToken');
 
 connectDB();
 app.use(
@@ -33,6 +40,38 @@ app.get('/logout', (req, res) => {
   req.session = null;
   req.logout();
   res.redirect('/');
+});
+
+var SpotifyWebApi = require('spotify-web-api-node');
+
+// credentials are optional
+var spotifyApi = new SpotifyWebApi({
+  accessToken: _testSpotifyAccessToken,
+  refreshToken: _testSpotifyRefreshToken,
+  clientId: clientId,
+  clientSecret: clientSecret,
+});
+
+app.get('/playlist/', async (req, res) => {
+  try {
+    const playlists = await spotifyApi.getPlaylist(_testSpotifyPlaylistId);
+    res.send(playlists);
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
+app.get('/refreshAccessToken', async (req, res) => {
+  try {
+    const data = await spotifyApi.refreshAccessToken();
+    await User.findOneAndUpdate(
+      { username: _testSpotifyUsername },
+      { accessToken: data.body.access_token }
+    );
+    res.send(data.body.access_token);
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
 });
 
 app.listen(8000, () => {
