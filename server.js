@@ -8,10 +8,10 @@ const connectDB = require('./config/db');
 const config = require('config');
 const clientId = config.get('spotifyClientId');
 const clientSecret = config.get('spotifyClientSecret');
-const _testSpotifyAccessToken = config.get('testSpotifyAccessToken');
-const _testSpotifyRefreshToken = config.get('testSpotifyAccessToken');
-const _testSpotifyPlaylistId = config.get('testSpotifyAccessToken');
-const _testSpotifyUsername = config.get('testSpotifyAccessToken');
+const _testSpotifyAccessToken = config.get('_testSpotifyAccessToken');
+const _testSpotifyRefreshToken = config.get('_testSpotifyRefreshToken');
+const _testSpotifyPlaylistId = config.get('_testSpotifyPlaylistId');
+const _testSpotifyUsername = config.get('_testSpotifyUsername');
 
 connectDB();
 app.use(
@@ -32,7 +32,7 @@ app.get(
   '/auth/spotify/callback',
   passport.authenticate('spotify', { failureRedirect: '/auth/error' }),
   function (req, res) {
-    res.redirect('/');
+    res.send({ isAutheticated: true });
   }
 );
 

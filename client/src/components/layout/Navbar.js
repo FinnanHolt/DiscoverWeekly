@@ -41,7 +41,10 @@ export const Navbar = () => {
           <Typography variant='h6' className={classes.title}>
             Disovered
           </Typography>
-          <Button color='inherit' href='http://localhost:8000/auth/spotify'>
+          <Button
+            color='inherit'
+            href={process.env.REACT_APP_DEV_SERVER + '/auth/spotify'}
+          >
             Login
           </Button>
         </Toolbar>

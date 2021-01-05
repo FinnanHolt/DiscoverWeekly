@@ -21,7 +21,7 @@ passport.use(
       passReqToCallback: true,
     },
     async function (req, accessToken, refreshToken, profile, done) {
-      const username = req.user.username;
+      const username = profile.username;
 
       try {
         let user = await User.findOne({ username: username });
