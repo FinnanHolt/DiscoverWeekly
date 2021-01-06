@@ -24,7 +24,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', isLoggedIn, async (req, res) => {
-  res.send(`Hello world ${req.user.displayName}`);
+  res.render('http://localhost:3000/');
 });
 app.get('/auth/error', (req, res) => res.send('Unknown Error'));
 app.get('/auth/spotify', passport.authenticate('spotify'));
@@ -32,7 +32,7 @@ app.get(
   '/auth/spotify/callback',
   passport.authenticate('spotify', { failureRedirect: '/auth/error' }),
   function (req, res) {
-    res.send({ isAutheticated: true });
+    res.redirect('/');
   }
 );
 
