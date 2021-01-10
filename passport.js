@@ -31,16 +31,15 @@ passport.use(
             { username: username },
             { accessToken: accessToken, refreshToken: refreshToken }
           );
+        } else {
+          user = new User({
+            username,
+            accessToken,
+            refreshToken,
+          });
 
-          return done(null, profile);
+          await user.save();
         }
-        user = new User({
-          username,
-          accessToken,
-          refreshToken,
-        });
-
-        await user.save();
       } catch (err) {
         console.error(err.message);
         return done(null, false);

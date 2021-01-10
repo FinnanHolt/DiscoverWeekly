@@ -2,3 +2,4 @@ node_modules/
 .history/
 config/default.json
 client/.eslintcache
+dev_notes.txt
