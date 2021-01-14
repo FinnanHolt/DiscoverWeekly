@@ -1,13 +1,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Navbar from './Navbar';
+import PropTypes from 'prop-types';
+import { HomePage } from '../Home/HomePage';
+import Discover from '../Home/Discover';
 
-const Landing = () => {
+const Landing = ({ auth: { isAuthenticated } }) => {
   return (
     <div>
-      <Navbar />
+      <Navbar isAuthenticated={isAuthenticated} />
+      {isAuthenticated ? <Discover /> : <HomePage />}
     </div>
   );
 };
 
-export default connect(null, null)(Landing);
+Navbar.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, null)(Landing);
