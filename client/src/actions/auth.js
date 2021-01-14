@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { USER_LOADED, AUTH_ERROR } from './types';
+import { USER_LOADED, AUTH_ERROR, LOGOUT } from './types';
 
 //Load User
 export const loadUser = () => async dispatch => {
@@ -16,4 +16,12 @@ export const loadUser = () => async dispatch => {
       type: AUTH_ERROR,
     });
   }
+};
+
+//Logout
+export const logout = () => async dispatch => {
+  await axios.get('http://localhost:8000/auth/logout');
+  dispatch({
+    type: LOGOUT,
+  });
 };

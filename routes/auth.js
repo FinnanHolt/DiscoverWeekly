@@ -16,7 +16,7 @@ router.get('/login/success', (req, res) => {
   if (req.user) {
     res.json({
       success: true,
-      message: 'user has successfully authenticated',
+      message: 'User has successfully authenticated',
       user: req.user,
       cookies: req.cookies,
     });
@@ -26,7 +26,10 @@ router.get('/login/success', (req, res) => {
 router.get('/logout', (req, res) => {
   req.session = null;
   req.logout();
-  res.redirect('/');
+  res.json({
+    success: true,
+    message: 'User has successfully logged out',
+  });
 });
 
 module.exports = router;

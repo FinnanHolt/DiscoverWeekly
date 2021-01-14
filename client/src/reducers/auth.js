@@ -1,7 +1,6 @@
-import { USER_LOADED } from '../actions/types';
+import { USER_LOADED, LOGOUT, AUTH_ERROR } from '../actions/types';
 
 const initialState = {
-  token: localStorage.getItem('token'),
   isAuthenticated: null,
   loading: true,
   user: null,
@@ -16,6 +15,13 @@ export default function (state = initialState, action) {
         isAuthenticated: true,
         loading: false,
         user: payload,
+      };
+    case AUTH_ERROR:
+    case LOGOUT:
+      return {
+        ...state,
+        isAuthenticated: false,
+        loading: false,
       };
     default:
       return state;

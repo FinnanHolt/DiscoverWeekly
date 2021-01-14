@@ -3,19 +3,21 @@ import { Fragment, useEffect } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import store from './store';
 import { loadUser } from './actions/auth';
-
-import { Navbar } from './components/layout/Navbar';
+import Landing from './components/layout/Landing';
+import { Provider } from 'react-redux';
 
 function App() {
   useEffect(() => {
     store.dispatch(loadUser());
   }, []);
   return (
-    <Fragment>
-      <Router>
-        <Route exact path='/' component={Navbar} />
-      </Router>
-    </Fragment>
+    <Provider store={store}>
+      <Fragment>
+        <Router>
+          <Route exact path='/' component={Landing} />
+        </Router>
+      </Fragment>
+    </Provider>
   );
 }
 

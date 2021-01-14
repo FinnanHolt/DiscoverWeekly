@@ -4,8 +4,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import { logout } from '../../actions/auth';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,32 +24,46 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const Navbar = () => {
+const Navbar = ({ isAuthenticated, logout }) => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <AppBar position='static'>
         <Toolbar className={classes.navbar}>
-          <IconButton
-            edge='start'
-            className={classes.menuButton}
-            color='inherit'
-            aria-label='menu'
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography variant='h6' className={classes.title}>
             Disovered
           </Typography>
-          <Button
-            color='inherit'
-            href={process.env.REACT_APP_DEV_SERVER + '/auth/spotify'}
-          >
-            Login
-          </Button>
+          {isAuthenticated ? (
+            <Button
+              color='inherit'
+              onClick={() => {
+                logout();
+              }}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button
+              color='inherit'
+              href={process.env.REACT_APP_DEV_SERVER + '/auth/spotify'}
+            >
+              Login
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </div>
   );
 };
+
+Navbar.propTypes = {
+  logout: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
+};
+
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
+
+export default connect(mapStateToProps, { logout })(Navbar);
