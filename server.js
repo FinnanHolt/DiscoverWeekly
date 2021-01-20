@@ -2,9 +2,7 @@ const express = require('express');
 const app = express();
 const isLoggedIn = require('./Middleware/auth');
 const connectDB = require('./config/db');
-const passport = require('passport');
 const cookieSession = require('cookie-session');
-require('./passport');
 var cors = require('cors');
 
 connectDB();
@@ -23,9 +21,6 @@ app.use(
     keys: ['key1', 'key2'],
   })
 );
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use('/auth', require('./routes/auth'));
 app.use('/spotify', require('./routes/spotify'));

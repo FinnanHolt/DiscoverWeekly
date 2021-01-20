@@ -46,7 +46,7 @@ const Navbar = ({ isAuthenticated, logout }) => {
           ) : (
             <Button
               color='inherit'
-              href={process.env.REACT_APP_DEV_SERVER + '/auth/spotify'}
+              href={process.env.REACT_APP_DEV_SERVER + '/auth'}
             >
               Login
             </Button>

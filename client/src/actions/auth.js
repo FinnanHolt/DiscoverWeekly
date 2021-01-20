@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { USER_LOADED, AUTH_ERROR, LOGOUT } from './types';
+import { USER_LOGIN, USER_LOADED, AUTH_ERROR, LOGOUT } from './types';
 
 //Load User
 export const loadUser = () => async dispatch => {

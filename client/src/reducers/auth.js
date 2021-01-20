@@ -1,7 +1,7 @@
-import { USER_LOADED, LOGOUT, AUTH_ERROR } from '../actions/types';
+import { USER_LOGIN, USER_LOADED, LOGOUT, AUTH_ERROR } from '../actions/types';
 
 const initialState = {
-  isAuthenticated: null,
+  isAuthenticated: false,
   loading: true,
   user: null,
 };
@@ -9,6 +9,7 @@ const initialState = {
 export default function (state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
+    case USER_LOGIN:
     case USER_LOADED:
       return {
         ...state,

@@ -7,21 +7,23 @@ const _testSpotifyAccessToken = config.get('_testSpotifyAccessToken');
 const _testSpotifyRefreshToken = config.get('_testSpotifyRefreshToken');
 const _testSpotifyPlaylistId = config.get('_testSpotifyPlaylistId');
 const _testSpotifyUsername = config.get('_testSpotifyUsername');
-
 var SpotifyWebApi = require('spotify-web-api-node');
 
-// credentials are optional
-var spotifyApi = new SpotifyWebApi({
-  accessToken: _testSpotifyAccessToken,
-  refreshToken: _testSpotifyRefreshToken,
-  clientId: clientId,
-  clientSecret: clientSecret,
-});
+router.get('/playlist', async (req, res) => {
+  var scopes = ['user-read-private'],
+    state = 'some-state-of-my-choice',
+    redirectUri = 'http://localhost:8000/spotify/playlist2';
 
-router.get('/playlist/', async (req, res) => {
+  var spotifyApi = new SpotifyWebApi({
+    accessToken:
+      'BQDWRC3YT-NAqFeVi5dkTwvM_YnmbYXWa7WYbMUnoc2G0KEa7cg6CI317qMYJN6ses3TTcYDYJKTrenZxdZBJl5hKkwRxWge7sTqfjZI-hj0iy1Yl59cTzWEDPxv-7mz9HTReRkBxer1CCQ0',
+    clientId: clientId,
+    clientSecret: clientSecret,
+    redirectUri: redirectUri,
+  });
   try {
-    const playlists = await spotifyApi.getPlaylist(_testSpotifyPlaylistId);
-    res.send(playlists);
+    const code = await spotifyApi.createAuthorizeURL(scopes, state);
+    res.redirect(code);
   } catch (err) {
     res.status(500).send('Server Error');
   }
