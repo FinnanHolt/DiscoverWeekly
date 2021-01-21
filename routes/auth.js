@@ -9,7 +9,7 @@ const jwtSecret = config.get('jwtSecret');
 const jwt = require('jsonwebtoken');
 const isLoggedIn = require('../Middleware/auth');
 
-var scopes = ['user-read-private'],
+var scopes = ['playlist-read-private'],
   state = 'some-state-of-my-choice',
   redirectUri = 'http://localhost:8000/auth/spotify/callback';
 

@@ -19,11 +19,10 @@ router.get('/playlist/:token', isLoggedIn, async (req, res) => {
   try {
     spotifyApi.setAccessToken(req.user.accessToken);
     const user = await spotifyApi.getMe();
-
-    const data = await spotifyApi.getUserPlaylists(user.body.id);
+    const data = await spotifyApi.getUserPlaylists(user.body.id, { limit: 50 });
     const playlists = data.body.items;
 
-    res.send(playlists);
+    res.send(playlists.filter(d => d.name == 'Discover Weekly'));
   } catch (err) {
     res.status(500).send('Server Error');
   }
