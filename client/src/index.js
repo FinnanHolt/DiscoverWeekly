@@ -1,12 +1,22 @@
 import React from 'react';
+import { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <Fragment>
+        <Router>
+          <Route exact path='/' component={App} />
+        </Router>
+      </Fragment>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

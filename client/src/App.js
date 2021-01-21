@@ -1,24 +1,29 @@
 import './App.css';
 import { Fragment, useEffect } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import store from './store';
+import { useLocation } from 'react-router-dom';
 import { loadUser } from './actions/auth';
 import Landing from './components/layout/Landing';
-import { Provider } from 'react-redux';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
-function App() {
+const App = ({ auth: { isAuthenticated }, loadUser }) => {
+  const location = useLocation();
   useEffect(() => {
-    store.dispatch(loadUser());
-  }, []);
+    loadUser(location.hash.slice(1));
+  }, [loadUser, location.hash]);
   return (
-    <Provider store={store}>
-      <Fragment>
-        <Router>
-          <Route exact path='/' component={Landing} />
-        </Router>
-      </Fragment>
-    </Provider>
+    <Fragment>
+      <Landing isAuthenticated={isAuthenticated} />
+    </Fragment>
   );
-}
+};
 
-export default App;
+Landing.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, { loadUser })(App);

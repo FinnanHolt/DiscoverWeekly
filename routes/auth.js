@@ -7,6 +7,7 @@ const clientId = config.get('spotifyClientId');
 const clientSecret = config.get('spotifyClientSecret');
 const jwtSecret = config.get('jwtSecret');
 const jwt = require('jsonwebtoken');
+const isLoggedIn = require('../Middleware/auth');
 
 router.get('/', (req, res) => {
   var scopes = ['user-read-private'],
@@ -58,11 +59,14 @@ router.get('/spotify/callback', async (req, res) => {
     token = data.body['access_token'];
     expiresIn = data.body['expires_in'];
 
-    //Put refresh and access tokens in db
+    //Put refresh and access tokens in db if user not already there
     console.log('The refresh token is ' + data.body['refresh_token']);
 
     spotifyApi.setRefreshToken(data.body['refresh_token']);
-    const payload = {};
+    //Add payload
+    const payload = {
+      accessToken: token,
+    };
 
     jwt.sign(
       payload,
@@ -78,27 +82,14 @@ router.get('/spotify/callback', async (req, res) => {
   }
 });
 
-router.get('/spotify/callback2', (req, res) => {
-  console.log('hh');
-});
-
-router.get('/login/success', async (req, res) => {
-  if (req.user) {
-    const token = await getToken(req.user.username);
-    res.json({
-      success: true,
-      message: 'User has successfully authenticated',
-      user: req.user,
-      cookies: req.cookies,
-      token: token,
-    });
+router.get('/login/success', isLoggedIn, async (req, res) => {
+  try {
+    res.json({ isAuthenticated: true });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
-
-async function getToken(id) {
-  const token = await User.findOne({ username: id }, { accessToken: 1 });
-  return token.accessToken;
-}
 
 router.get('/logout', (req, res) => {
   req.session = null;
