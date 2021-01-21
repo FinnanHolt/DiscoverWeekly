@@ -1,6 +1,6 @@
 import axios from 'axios';
 import setAuthToken from '../utils/setAuthToken';
-import { USER_LOGIN, USER_LOADED, AUTH_ERROR, LOGOUT } from './types';
+import { USER_LOADED, AUTH_ERROR, LOGOUT } from './types';
 
 //Load User
 export const loadUser = urlToken => async dispatch => {
@@ -13,9 +13,10 @@ export const loadUser = urlToken => async dispatch => {
     const res = await axios.get('http://localhost:8000/auth/login/success', {
       withCredentials: true,
     });
+    const token = urlToken ? urlToken : localStorage.token;
     dispatch({
       type: USER_LOADED,
-      payload: res.data,
+      payload: { ...res.data, token },
     });
   } catch (error) {
     dispatch({

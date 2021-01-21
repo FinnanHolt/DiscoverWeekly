@@ -11,6 +11,7 @@ export default function (state = initialState, action) {
   switch (type) {
     case USER_LOGIN:
     case USER_LOADED:
+      localStorage.setItem('token', payload.token);
       return {
         ...state,
         isAuthenticated: true,
@@ -19,6 +20,7 @@ export default function (state = initialState, action) {
       };
     case AUTH_ERROR:
     case LOGOUT:
+      localStorage.removeItem('token');
       return {
         ...state,
         isAuthenticated: false,

@@ -9,15 +9,17 @@ const jwtSecret = config.get('jwtSecret');
 const jwt = require('jsonwebtoken');
 const isLoggedIn = require('../Middleware/auth');
 
-router.get('/', (req, res) => {
-  var scopes = ['user-read-private'],
-    state = 'isAuthenticated',
-    redirectUri = 'http://localhost:8000/auth/spotify/callback';
+var scopes = ['user-read-private'],
+  state = 'some-state-of-my-choice',
+  redirectUri = 'http://localhost:8000/auth/spotify/callback';
 
-  var spotifyApi = new SpotifyWebApi({
-    redirectUri: redirectUri,
-    clientId: clientId,
-  });
+var spotifyApi = new SpotifyWebApi({
+  clientId: clientId,
+  clientSecret: clientSecret,
+  redirectUri: redirectUri,
+});
+
+router.get('/', (req, res) => {
   try {
     const urlAuthorise = spotifyApi.createAuthorizeURL(scopes, state);
     res.redirect(urlAuthorise);
@@ -27,15 +29,9 @@ router.get('/', (req, res) => {
 });
 
 router.get('/spotify/callback', async (req, res) => {
-  var spotifyApi = new SpotifyWebApi({
-    clientId: clientId,
-    clientSecret: clientSecret,
-    redirectUri: 'http://localhost:8000/auth/spotify/callback',
-  });
-
   try {
-    var code = req.query.code;
-    const data = await spotifyApi.authorizationCodeGrant(code);
+    var authCode = req.query.code;
+    const data = await spotifyApi.authorizationCodeGrant(authCode);
 
     accessToken = data.body['access_token'];
     refreshToken = data.body['refresh_token'];
@@ -50,40 +46,41 @@ router.get('/spotify/callback', async (req, res) => {
       res.status(500).send('Problem connecting to Spotify API');
     }
 
-    addUserToDb(username, accessToken, refreshToken);
+    addUserToDb(username, accessToken, refreshToken, authCode);
 
     const payload = {
       accessToken: accessToken,
+      authCode: authCode,
     };
 
-    jwt.sign(
-      payload,
-      config.get('jwtSecret'),
-      { expiresIn: expiresIn },
-      (err, token) => {
-        if (err) throw err;
-        res.redirect('http://localhost:3000/#' + token);
-      }
-    );
+    jwt.sign(payload, jwtSecret, { expiresIn: expiresIn }, (err, token) => {
+      if (err) throw err;
+      res.redirect('http://localhost:3000/#' + token);
+    });
   } catch (error) {
     console.log('Something went wrong!', error);
   }
 });
 
-async function addUserToDb(username, accessToken, refreshToken) {
+async function addUserToDb(username, accessToken, refreshToken, authCode) {
   try {
     let user = await User.findOne({ username: username });
 
     if (user) {
       await User.findOneAndUpdate(
         { username: username },
-        { accessToken: accessToken, refreshToken: refreshToken }
+        {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          authCode: authCode,
+        }
       );
     } else {
       user = new User({
         username,
         accessToken,
         refreshToken,
+        authCode,
       });
 
       await user.save();

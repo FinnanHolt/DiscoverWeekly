@@ -17,6 +17,11 @@ const UsersSchema = new Schema({
     required: true,
     unique: true,
   },
+  authCode: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 });
 
 module.exports = User = mongoose.model('user', UsersSchema);

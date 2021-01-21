@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getPlaylists } from '../../actions/playlists';
 import { PlaylistItem } from './PlaylistItem';
 
 const Discover = ({
-  user: { token },
+  token,
   playlists: { playlists, loading },
   getPlaylists,
 }) => {
@@ -23,12 +23,12 @@ const Discover = ({
 };
 
 Discover.propTypes = {
-  user: PropTypes.object.isRequired,
+  token: PropTypes.string.isRequired,
   playlists: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
-  user: state.auth.user,
+  token: state.auth.user.token,
   playlists: state.playlists,
 });
 
