@@ -8,7 +8,6 @@ const clientSecret = config.get('spotifyClientSecret');
 const jwtSecret = config.get('jwtSecret');
 const jwt = require('jsonwebtoken');
 const isLoggedIn = require('../Middleware/auth');
-const { json } = require('express');
 
 router.get('/', (req, res) => {
   var scopes = ['user-read-private'],
