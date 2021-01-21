@@ -8,6 +8,7 @@ const clientSecret = config.get('spotifyClientSecret');
 const jwtSecret = config.get('jwtSecret');
 const jwt = require('jsonwebtoken');
 const isLoggedIn = require('../Middleware/auth');
+const { json } = require('express');
 
 router.get('/', (req, res) => {
   var scopes = ['user-read-private'],
@@ -26,24 +27,6 @@ router.get('/', (req, res) => {
   }
 });
 
-// try {
-//   let user = await User.findOne({ username: username });
-
-//   if (user) {
-//     await User.findOneAndUpdate(
-//       { username: username },
-//       { accessToken: accessToken, refreshToken: refreshToken }
-//     );
-//   } else {
-//     user = new User({
-//       username,
-//       accessToken,
-//       refreshToken,
-//     });
-
-//     await user.save();
-//   }
-
 router.get('/spotify/callback', async (req, res) => {
   var spotifyApi = new SpotifyWebApi({
     clientId: clientId,
@@ -51,21 +34,27 @@ router.get('/spotify/callback', async (req, res) => {
     redirectUri: 'http://localhost:8000/auth/spotify/callback',
   });
 
-  req.sessionKey = 'yes';
   try {
     var code = req.query.code;
     const data = await spotifyApi.authorizationCodeGrant(code);
 
-    token = data.body['access_token'];
+    accessToken = data.body['access_token'];
+    refreshToken = data.body['refresh_token'];
     expiresIn = data.body['expires_in'];
 
-    //Put refresh and access tokens in db if user not already there
-    console.log('The refresh token is ' + data.body['refresh_token']);
+    spotifyApi.setAccessToken(accessToken);
+    let username;
+    try {
+      const userData = await spotifyApi.getMe();
+      username = userData.body.id;
+    } catch (error) {
+      res.status(500).send('Problem connecting to Spotify API');
+    }
 
-    spotifyApi.setRefreshToken(data.body['refresh_token']);
-    //Add payload
+    addUserToDb(username, accessToken, refreshToken);
+
     const payload = {
-      accessToken: token,
+      accessToken: accessToken,
     };
 
     jwt.sign(
@@ -81,6 +70,29 @@ router.get('/spotify/callback', async (req, res) => {
     console.log('Something went wrong!', error);
   }
 });
+
+async function addUserToDb(username, accessToken, refreshToken) {
+  try {
+    let user = await User.findOne({ username: username });
+
+    if (user) {
+      await User.findOneAndUpdate(
+        { username: username },
+        { accessToken: accessToken, refreshToken: refreshToken }
+      );
+    } else {
+      user = new User({
+        username,
+        accessToken,
+        refreshToken,
+      });
+
+      await user.save();
+    }
+  } catch (error) {
+    res.status(500).send('Problem inserting into database');
+  }
+}
 
 router.get('/login/success', isLoggedIn, async (req, res) => {
   try {
