@@ -15,8 +15,7 @@ const isLoggedIn = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, jwtSecret);
     const accessToken = decoded.accessToken;
-    const authCode = decoded.authCode;
-    req.user = { accessToken, authCode };
+    req.user = { accessToken };
   } catch (err) {
     res.status(401).json({ msg: 'Token is not valid' });
   }

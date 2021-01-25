@@ -6,6 +6,9 @@ const clientSecret = config.get('spotifyClientSecret');
 const _testSpotifyUsername = config.get('_testSpotifyUsername');
 var SpotifyWebApi = require('spotify-web-api-node');
 const isLoggedIn = require('../Middleware/auth');
+const User = require('../models/User');
+const Song = require('../models/Song');
+const Playlist = require('../models/Playlist');
 
 var redirectUri = 'http://localhost:8000/auth/spotify/callback';
 
@@ -18,11 +21,47 @@ var spotifyApi = new SpotifyWebApi({
 router.get('/playlist/:token', isLoggedIn, async (req, res) => {
   try {
     spotifyApi.setAccessToken(req.user.accessToken);
-    const user = await spotifyApi.getMe();
-    const data = await spotifyApi.getUserPlaylists(user.body.id, { limit: 50 });
-    const playlists = data.body.items;
+    const userData = await spotifyApi.getMe();
+    const playlistData = await spotifyApi.getUserPlaylists(userData.body.id, {
+      limit: 50,
+    });
+    playlistData.body.items.filter(d => d.name == 'Discover Weekly');
+    const playlist = playlistData.body.items.filter(
+      d => d.name == 'Discover Weekly'
+    )[0];
 
-    res.send(playlists.filter(d => d.name == 'Discover Weekly'));
+    const { id: playlistId, name: playlistName, uri: playlistUrl } = playlist;
+    const songData = await spotifyApi.getPlaylist(playlistId);
+
+    songs = songData.body.tracks.items.map(song => {
+      let {
+        track: { id, name, uri: url },
+      } = song;
+
+      return {
+        id,
+        name,
+        url,
+      };
+    });
+    let user = await User.findOneAndUpdate(
+      { username: userData.body.id, 'playlists.id': { $ne: playlistId } },
+
+      {
+        $push: {
+          playlists: {
+            id: playlistId,
+            name: playlistName,
+            url: playlistUrl,
+            songs: songs,
+          },
+        },
+      }
+    );
+
+    await user.save();
+
+    res.send([]);
   } catch (err) {
     res.status(500).send('Server Error');
   }

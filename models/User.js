@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Playlist = require('./Playlist').schema;
 const Schema = mongoose.Schema;
 
 const UsersSchema = new Schema({
@@ -17,10 +18,9 @@ const UsersSchema = new Schema({
     required: true,
     unique: true,
   },
-  authCode: {
-    type: String,
+  playlists: {
+    type: [Playlist],
     required: true,
-    unique: true,
   },
 });
 

@@ -46,11 +46,10 @@ router.get('/spotify/callback', async (req, res) => {
       res.status(500).send('Problem connecting to Spotify API');
     }
 
-    addUserToDb(username, accessToken, refreshToken, authCode);
+    addUserToDb(username, accessToken, refreshToken);
 
     const payload = {
       accessToken: accessToken,
-      authCode: authCode,
     };
 
     jwt.sign(payload, jwtSecret, { expiresIn: expiresIn }, (err, token) => {
@@ -62,7 +61,7 @@ router.get('/spotify/callback', async (req, res) => {
   }
 });
 
-async function addUserToDb(username, accessToken, refreshToken, authCode) {
+async function addUserToDb(username, accessToken, refreshToken) {
   try {
     let user = await User.findOne({ username: username });
 
@@ -72,7 +71,6 @@ async function addUserToDb(username, accessToken, refreshToken, authCode) {
         {
           accessToken: accessToken,
           refreshToken: refreshToken,
-          authCode: authCode,
         }
       );
     } else {
@@ -80,7 +78,6 @@ async function addUserToDb(username, accessToken, refreshToken, authCode) {
         username,
         accessToken,
         refreshToken,
-        authCode,
       });
 
       await user.save();

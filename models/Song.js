@@ -10,6 +10,11 @@ const SongSchema = new Schema({
     type: String,
     required: true,
   },
+
+  url: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = Song = mongoose.model('song', SongSchema);

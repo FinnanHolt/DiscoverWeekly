@@ -14,7 +14,6 @@ const Discover = ({
   }, [token, getPlaylists]);
   return (
     <div className='container'>
-      {/* Implement Spinner */}
       {playlists.slice(0, 5).map(playlist => (
         <PlaylistItem key={playlist._id} playlist={playlist} />
       ))}
