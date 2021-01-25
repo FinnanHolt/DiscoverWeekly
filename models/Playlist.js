@@ -3,10 +3,6 @@ const Song = require('./Song').schema;
 const Schema = mongoose.Schema;
 
 const PlaylistSchema = new Schema({
-  id: {
-    type: String,
-    required: true,
-  },
   name: {
     type: String,
     required: true,

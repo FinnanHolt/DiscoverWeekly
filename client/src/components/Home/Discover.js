@@ -4,17 +4,13 @@ import PropTypes from 'prop-types';
 import { getPlaylists } from '../../actions/playlists';
 import { PlaylistItem } from './PlaylistItem';
 
-const Discover = ({
-  token,
-  playlists: { playlists, loading },
-  getPlaylists,
-}) => {
+const Discover = ({ token, playlists: { playlists }, getPlaylists }) => {
   useEffect(() => {
     getPlaylists(token);
   }, [token, getPlaylists]);
   return (
     <div className='container'>
-      {playlists.slice(0, 5).map(playlist => (
+      {playlists.slice(0, 4).map(playlist => (
         <PlaylistItem key={playlist._id} playlist={playlist} />
       ))}
     </div>

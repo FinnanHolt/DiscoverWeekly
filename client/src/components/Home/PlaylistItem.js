@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const PlaylistItem = ({ playlist: { name } }) => {
+export const PlaylistItem = ({ playlist: { name, songs } }) => {
   return (
     <div className='card'>
       <h3 className='title'>{name}</h3>
