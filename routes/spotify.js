@@ -7,8 +7,7 @@ const _testSpotifyUsername = config.get('_testSpotifyUsername');
 var SpotifyWebApi = require('spotify-web-api-node');
 const isLoggedIn = require('../Middleware/auth');
 const User = require('../models/User');
-const Song = require('../models/Song');
-const Playlist = require('../models/Playlist');
+const cron = require('node-cron');
 
 var redirectUri = 'http://localhost:8000/auth/spotify/callback';
 
@@ -18,7 +17,23 @@ var spotifyApi = new SpotifyWebApi({
   redirectUri: redirectUri,
 });
 
-router.get('/playlist/:token', isLoggedIn, async (req, res) => {
+updatePlaylists = async () => {
+  await User.find({}, 'accessToken', function (err, users) {
+    if (err) {
+      console.log(err);
+    } else {
+      let accessTokens = users.map(doc => {
+        return doc.accessToken;
+      });
+      accessTokens.forEach(a => {
+        console.log(a);
+        updatePlaylist(a);
+      });
+    }
+  });
+};
+
+updatePlaylist = async req => {
   try {
     spotifyApi.setAccessToken(req.user.accessToken);
     const userData = await spotifyApi.getMe();
@@ -63,9 +78,11 @@ router.get('/playlist/:token', isLoggedIn, async (req, res) => {
 
     res.send([]);
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.log('failed');
   }
-});
+};
+
+cron.schedule('* 12 * * 1', updatePlaylists);
 
 // router.get('/refreshAccessToken', async (req, res) => {
 //   try {
