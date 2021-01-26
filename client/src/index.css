@@ -10,8 +10,13 @@ body {
   height: 300px;
   width: 600px;
   top: 60px;
-  left: calc(50% - 300px);
+  left: calc(50% - 350px);
   display: flex;
+}
+
+.secondary {
+  top: 367px;
+  color: white;
 }
 
 .card {
